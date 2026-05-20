@@ -1,0 +1,30 @@
+node_modules/
+.next/
+.tmp/
+.env
+.env*
+!.env.example
+tools/.audit_results/
+
+# TypeScript
+*.tsbuildinfo
+
+# Python
+__pycache__
+**/__pycache__
+
+# Playwright / Browser Automation
+.playwright-mcp/
+
+# Runtime caches
+.bun/
+.turbo/
+.vercel/
+.netlify/
+
+# OS & Editor
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+*~

@@ -1,0 +1,55 @@
+{
+  "skill_name": "update-starter",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run /update-starter in this project and see if anything needs updating or auditing",
+      "expected_output": "tools/update_deps.py --list runs first, then --interactive, then all 5 audits in sequence (deps, types, security, lint, build), then generate_report.py",
+      "files": [],
+      "assertions": [
+        {
+          "id": "a1",
+          "assertion": "update_deps.py --list was called",
+          "check": "file_contains",
+          "path": "tools/.audit_results/update_deps.json",
+          "expected": "{\"tool\": \"update_deps\""
+        },
+        {
+          "id": "a2",
+          "assertion": "All 5 audit tools ran in order",
+          "check": "shell",
+          "cmd": "ls -t tools/.audit_results/ | grep -E 'deps|types|security|lint|build' | wc -l",
+          "expected": "5"
+        },
+        {
+          "id": "a3",
+          "assertion": "generate_report.py was called",
+          "check": "grep_log",
+          "pattern": "Production-ready|Fix failures"
+        },
+        {
+          "id": "a4",
+          "assertion": "Self-healing: bun run fix was called if lint failed",
+          "check": "shell",
+          "cmd": "grep -r 'bun run fix' tools/.audit_results/ || echo 'not_needed'",
+          "expected": "bun run fix|not_needed"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Audit this project and update any outdated packages to the latest version",
+      "expected_output": "update_deps.py ran (list → interactive/ AskUserQuestion → update), then all 5 audits ran, then report generated",
+      "files": [],
+      "assertions": [
+        {
+          "id": "b1",
+          "assertion": "package.json updated after selection",
+          "check": "shell",
+          "cmd": "python3 -c \"import json; d=json.load(open('package.json')); print(d['dependencies'].get('next','?'))\"",
+          "expected": "^16"
+        }
+      ]
+    }
+  ]
+}
